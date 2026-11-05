@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { LayoutGrid } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ProductFeed } from "@/components/ProductFeed";
 import { SearchBar } from "@/components/SearchBar";
 import { SortSelect } from "@/components/SortSelect";
@@ -78,6 +80,13 @@ function HomePage() {
           <p className="mt-2 px-1 text-xs text-muted-foreground sm:text-center">
             Links are Amazon affiliate links — I may earn a small commission at no extra cost to you.
           </p>
+          <div className="mt-5 flex justify-center">
+            <Button asChild variant="gold" size="lg" className="rounded-full px-6">
+              <Link to="/browse">
+                <LayoutGrid aria-hidden="true" /> Browse all products
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="mt-8 mb-4 flex items-center justify-between gap-3">
