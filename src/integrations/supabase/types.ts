@@ -14,16 +14,73 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      products: {
+        Row: {
+          amazon_url: string
+          brand: string
+          created_at: string
+          episode: number
+          id: string
+          name: string
+          published: boolean
+          reel_code: string
+        }
+        Insert: {
+          amazon_url: string
+          brand?: string
+          created_at?: string
+          episode: number
+          id?: string
+          name: string
+          published?: boolean
+          reel_code?: string
+        }
+        Update: {
+          amazon_url?: string
+          brand?: string
+          created_at?: string
+          episode?: number
+          id?: string
+          name?: string
+          published?: boolean
+          reel_code?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_exists: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +207,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
