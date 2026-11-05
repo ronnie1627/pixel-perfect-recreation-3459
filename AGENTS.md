@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Product reads/writes go through the browser Supabase client in `src/lib/products.ts`; RLS (published-only for visitors, `has_role(admin)` for writes) is the security boundary, so no server functions are needed.
+- The single admin is bootstrapped by a trigger on `auth.users`: the first account gets the admin role and every later sign-up is rejected — keep that trigger if auth changes.
+- `/admin` is a client-only route (`ssr: false`) that renders its own login form instead of using an `_authenticated` layout, because the spec wants login at `/admin`.
+- Search parsing lives in pure helpers in `src/lib/search.ts` / `src/lib/links.ts` with tests in `src/lib/search.test.ts`; change rules there, not in components.
