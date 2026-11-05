@@ -250,7 +250,7 @@ function Dashboard({ email }: { email: string }) {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["products"] });
 
   const save = useMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: ProductInput }) => {
+    mutationFn: async ({ id, input }: { id?: string | undefined; input: ProductInput }) => {
       const { error } = id
         ? await supabase.from("products").update(input).eq("id", id)
         : await supabase.from("products").insert(input);

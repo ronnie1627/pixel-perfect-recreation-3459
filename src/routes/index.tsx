@@ -10,10 +10,13 @@ import { parseSort, type SortOrder } from "@/lib/search";
 type FeedSearch = { q?: string | undefined; sort?: SortOrder | undefined };
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>): FeedSearch => ({
-    q: typeof search.q === "string" && search.q ? search.q.slice(0, 120) : undefined,
-    sort: search.sort === "oldest" ? "oldest" : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): FeedSearch => {
+    const q = search["q"];
+    return {
+      q: typeof q === "string" && q ? q.slice(0, 120) : undefined,
+      sort: search["sort"] === "oldest" ? "oldest" : undefined,
+    };
+  },
   head: () => ({
     meta: [
       { title: "Vettly – Tested picks from my reels" },
