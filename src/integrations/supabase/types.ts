@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           episode: number
           id: string
+          image_url: string
           name: string
           published: boolean
           reel_code: string
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           episode: number
           id?: string
+          image_url?: string
           name: string
           published?: boolean
           reel_code?: string
@@ -41,6 +43,7 @@ export type Database = {
           created_at?: string
           episode?: number
           id?: string
+          image_url?: string
           name?: string
           published?: boolean
           reel_code?: string

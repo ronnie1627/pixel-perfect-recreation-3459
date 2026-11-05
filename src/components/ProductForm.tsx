@@ -15,6 +15,7 @@ export type ProductInput = {
   brand: string;
   reel_code: string;
   amazon_url: string;
+  image_url: string;
   published: boolean;
 };
 
@@ -29,6 +30,11 @@ const schema = z.object({
     .string()
     .trim()
     .refine((v) => v === "" || extractReelCode(v) !== null, "Paste an Instagram reel link, e.g. instagram.com/reel/…"),
+  imageUrl: z
+    .string()
+    .trim()
+    .max(2048, "That link is too long")
+    .refine((v) => v === "" || isValidHttpUrl(v), "Enter a valid image link starting with https://"),
   amazonUrl: z
     .string()
     .trim()
@@ -55,6 +61,7 @@ export function ProductForm({
   const [brand, setBrand] = useState(initial?.brand ?? "");
   const [reel, setReel] = useState(initial?.reel_code ? reelUrl(initial.reel_code) : "");
   const [amazonUrl, setAmazonUrl] = useState(initial?.amazon_url ?? "");
+  const [imageUrl, setImageUrl] = useState(initial?.image_url ?? "");
   const [published, setPublished] = useState(initial?.published ?? true);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -62,7 +69,7 @@ export function ProductForm({
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const result = schema.safeParse({ episode, name, brand, reelUrl: reel, amazonUrl });
+    const result = schema.safeParse({ episode, name, brand, reelUrl: reel, imageUrl, amazonUrl });
     if (!result.success) {
       const next: Errors = {};
       for (const issue of result.error.issues) {
@@ -79,6 +86,7 @@ export function ProductForm({
       brand: result.data.brand,
       reel_code: extractReelCode(result.data.reelUrl) ?? "",
       amazon_url: result.data.amazonUrl,
+      image_url: result.data.imageUrl,
       published,
     });
   }
@@ -133,6 +141,17 @@ export function ProductForm({
             placeholder="https://www.instagram.com/reel/…"
             aria-invalid={!!errors.reelUrl}
             aria-describedby={errors.reelUrl ? "reel-error" : "reel-hint"}
+          />
+        </Field>
+        <Field id="image" label="Product photo link" error={errors.imageUrl} hint="Paste an image address, e.g. right-click the Amazon photo → Copy image address.">
+          <Input
+            id="image"
+            type="url"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://m.media-amazon.com/images/…"
+            aria-invalid={!!errors.imageUrl}
+            aria-describedby={errors.imageUrl ? "image-error" : "image-hint"}
           />
         </Field>
         <Field id="amazon" label="Amazon link" error={errors.amazonUrl}>

@@ -8,6 +8,13 @@
       "when": 1793896194280,
       "tag": "0000_vettly_products_and_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793898791078,
+      "tag": "0001_add_product_image_url",
+      "breakpoints": true
     }
   ]
 }

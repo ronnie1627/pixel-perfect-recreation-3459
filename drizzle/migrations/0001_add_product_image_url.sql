@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN image_url text NOT NULL DEFAULT '' CHECK (char_length(image_url) <= 2048);
