@@ -7,6 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fetchProductPage, PUBLIC_PAGE_SIZE } from "@/lib/products";
 import type { SortOrder } from "@/lib/search";
 
+// One column on phones, two on tablets, three on laptops/desktops.
+const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+
 export function ProductFeed({ query, sort }: { query: string; sort: SortOrder }) {
   const sentinel = useRef<HTMLDivElement>(null);
 
@@ -35,8 +38,8 @@ export function ProductFeed({ query, sort }: { query: string; sort: SortOrder })
 
   if (feed.isPending) {
     return (
-      <div className="space-y-6" aria-busy="true" aria-label="Loading products">
-        {[0, 1].map((i) => (
+      <div className={GRID} aria-busy="true" aria-label="Loading products">
+        {[0, 1, 2].map((i) => (
           <div key={i} className="rounded-2xl border border-border bg-card p-4">
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="mt-3 h-6 w-2/3" />
@@ -78,7 +81,7 @@ export function ProductFeed({ query, sort }: { query: string; sort: SortOrder })
           </p>
         </div>
       ) : (
-        <ol className="space-y-6">
+        <ol className={GRID}>
           {products.map((p) => (
             <li key={p.id}>
               <ProductCard product={p} />
