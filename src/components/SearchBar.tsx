@@ -13,7 +13,7 @@ type Props = {
 export function SearchBar({
   value,
   onChange,
-  placeholder = "Search by episode, product or brand",
+  placeholder = "Episode, product or brand",
   label = "Search products",
   size = "lg",
   className,
