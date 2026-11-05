@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,7 +60,7 @@ export function ProductForm({
 
   const previewCode = useMemo(() => extractReelCode(reel), [reel]);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const result = schema.safeParse({ episode, name, brand, reelUrl: reel, amazonUrl });
     if (!result.success) {
@@ -182,7 +182,7 @@ function Field({
   label: string;
   error?: string;
   hint?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="space-y-1.5">

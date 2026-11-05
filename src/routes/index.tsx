@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ProductFeed } from "@/components/ProductFeed";
 import { SearchBar } from "@/components/SearchBar";
 import { SortSelect } from "@/components/SortSelect";
@@ -54,9 +54,9 @@ function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="mx-auto flex w-full max-w-[420px] items-center justify-between px-4 pt-5">
-        <a href="/" aria-label="Vettly home" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Link to="/" aria-label="Vettly home" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Wordmark className="text-2xl" />
-        </a>
+        </Link>
         <ThemeToggle />
       </header>
 
