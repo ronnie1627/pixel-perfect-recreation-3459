@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   useInfiniteQuery,
@@ -129,7 +129,7 @@ function AdminLogin() {
   const [busy, setBusy] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email.trim() || password.length < (setupMode ? 8 : 1)) {
       toast.error(setupMode ? "Use a valid email and a password of 8+ characters." : "Enter your email and password.");
