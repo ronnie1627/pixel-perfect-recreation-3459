@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Wordmark } from "@/components/Wordmark";
 import { parseSort, type SortOrder } from "@/lib/search";
 
-type FeedSearch = { q?: string; sort?: SortOrder };
+type FeedSearch = { q?: string | undefined; sort?: SortOrder | undefined };
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): FeedSearch => ({
