@@ -56,27 +56,31 @@ function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="mx-auto flex w-full max-w-[420px] items-center justify-between px-4 pt-5">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 pt-5 sm:px-6 lg:px-8">
         <Link to="/" aria-label="Vettly home" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Wordmark className="text-2xl" />
         </Link>
         <ThemeToggle />
       </header>
 
-      <main className="mx-auto w-full max-w-[420px] flex-1 px-4">
-        <section className="pt-10 pb-6 text-center">
-          <h1 className="text-6xl leading-none font-extrabold">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6 lg:px-8">
+        <section className="pt-8 pb-6 text-center sm:pt-14 sm:pb-8">
+          <h1 className="text-5xl leading-none font-extrabold sm:text-7xl lg:text-8xl">
             <Wordmark />
           </h1>
-          <p className="mt-3 text-lg text-muted-foreground">Vetted products. Real reviews.</p>
+          <p className="mt-3 text-base text-muted-foreground sm:text-xl">
+            Vetted products. Real reviews.
+          </p>
         </section>
 
-        <SearchBar value={input} onChange={setInput} />
-        <p className="mt-2 px-1 text-xs text-muted-foreground">
-          Links are Amazon affiliate links — I may earn a small commission at no extra cost to you.
-        </p>
+        <div className="mx-auto w-full max-w-xl">
+          <SearchBar value={input} onChange={setInput} />
+          <p className="mt-2 px-1 text-xs text-muted-foreground sm:text-center">
+            Links are Amazon affiliate links — I may earn a small commission at no extra cost to you.
+          </p>
+        </div>
 
-        <div className="mt-6 mb-4 flex items-center justify-between gap-3">
+        <div className="mt-8 mb-4 flex items-center justify-between gap-3">
           <span className="text-sm font-medium">Latest picks</span>
           <SortSelect
             value={sort}
@@ -93,7 +97,7 @@ function HomePage() {
       </main>
 
       <footer className="mt-10 border-t border-border py-8 text-center text-xs text-muted-foreground">
-        <p className="mx-auto max-w-[420px] px-4">
+        <p className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           © Vettly. As an Amazon Associate I earn from qualifying purchases.
         </p>
       </footer>

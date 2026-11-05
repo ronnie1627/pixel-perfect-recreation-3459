@@ -10,9 +10,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article
       aria-labelledby={`p-${product.id}`}
-      className="animate-rise rounded-2xl border border-border bg-card p-4 shadow-card"
+      className="animate-rise flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-card"
     >
-      <Badge variant="gold" className="rounded-full px-3 py-1 text-xs">
+      <Badge variant="gold" className="self-start rounded-full px-3 py-1 text-xs">
         Ep. {product.episode}
       </Badge>
       <div className="mt-3 mb-4 flex items-start justify-between gap-3">
@@ -29,7 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
           {format(added, "d MMM yyyy")}
         </time>
       </div>
-      <ReelEmbed reelCode={product.reel_code} title={product.name} />
+      <ReelEmbed reelCode={product.reel_code} title={product.name} className="mt-auto" />
       <Button asChild variant="gold" size="xl" className="mt-4 w-full">
         <a href={product.amazon_url} target="_blank" rel="sponsored noopener noreferrer">
           Click here for your link
