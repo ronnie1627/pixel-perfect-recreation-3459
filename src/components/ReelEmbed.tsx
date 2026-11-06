@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 // 320-640px, and the video itself is always embed-width x width*1.25.
 // The iframe is cross-origin so that chrome can't be styled away — it is
 // cropped out instead: the iframe is 208px taller than the box and shifted up
-// by the header height, leaving only the video visible.
+// by the header height, leaving only the video visible (box is 9:16).
 const HEADER = 54;
 const FOOTER = 154;
 
