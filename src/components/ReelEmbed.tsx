@@ -2,6 +2,17 @@ import { Clapperboard } from "lucide-react";
 import { reelEmbedUrl } from "@/lib/links";
 import { cn } from "@/lib/utils";
 
+// Instagram's reel embed paints its own chrome around the video: a 54px header
+// (avatar, username, "View profile") above the video and a 154px footer
+// ("View more on Instagram", like/comment/share/save, likes, comment box)
+// below it. Both are fixed heights at every embed width, measured across
+// 320-640px, and the video itself is always embed-width x width*1.25.
+// The iframe is cross-origin so that chrome can't be styled away — it is
+// cropped out instead: the iframe is 208px taller than the box and shifted up
+// by the header height, leaving only the video visible.
+const HEADER = 54;
+const FOOTER = 154;
+
 export function ReelEmbed({
   reelCode,
   title,
@@ -14,7 +25,7 @@ export function ReelEmbed({
   return (
     <div
       className={cn(
-        "relative aspect-[9/16] w-full overflow-hidden rounded-xl border border-border bg-muted",
+        "relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-border bg-muted",
         className,
       )}
     >
@@ -27,7 +38,10 @@ export function ReelEmbed({
           allow="autoplay; encrypted-media; clipboard-write; picture-in-picture"
           allowFullScreen
           scrolling="no"
-          className="absolute inset-0 h-full w-full border-0"
+          aria-hidden="true"
+          tabIndex={-1}
+          className="absolute inset-x-0 top-0 w-full border-0"
+          style={{ height: `calc(100% + ${HEADER + FOOTER}px)`, marginTop: `-${HEADER}px` }}
         />
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-muted-foreground">
