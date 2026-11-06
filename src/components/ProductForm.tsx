@@ -185,6 +185,14 @@ export function ProductForm({
       <div>
         <p className="mb-2 text-sm font-medium">Live preview</p>
         <ReelEmbed reelCode={previewCode} title={name || "Preview"} />
+        <p className="mt-4 mb-2 text-sm font-medium">Photo preview</p>
+        <div className="flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-border bg-muted">
+          {isValidHttpUrl(imageUrl.trim()) ? (
+            <img src={imageUrl.trim()} alt="" referrerPolicy="no-referrer" className="h-full w-full object-contain" />
+          ) : (
+            <span className="text-xs text-muted-foreground">No photo yet</span>
+          )}
+        </div>
       </div>
     </form>
   );
