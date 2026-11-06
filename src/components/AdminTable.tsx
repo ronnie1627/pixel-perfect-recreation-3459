@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Pencil, Trash2 } from "lucide-react";
+import { ImageOff, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -30,6 +30,7 @@ export function AdminTable({
         <TableHeader>
           <TableRow>
             <TableHead className="w-20">Episode</TableHead>
+            <TableHead className="w-16">Photo</TableHead>
             <TableHead>Name</TableHead>
             <TableHead className="hidden sm:table-cell">Brand</TableHead>
             <TableHead className="hidden md:table-cell">Date added</TableHead>
@@ -46,6 +47,15 @@ export function AdminTable({
                 <Badge variant="gold" className="rounded-full">
                   {p.episode}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex size-12 items-center justify-center overflow-hidden rounded-md border border-border bg-muted">
+                  {p.image_url ? (
+                    <img src={p.image_url} alt="" loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-contain" />
+                  ) : (
+                    <ImageOff className="size-4 text-muted-foreground" aria-label="No photo" />
+                  )}
+                </div>
               </TableCell>
               <TableCell className="font-medium">
                 {p.name}
