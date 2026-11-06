@@ -40,8 +40,15 @@ export function ReelEmbed({
           scrolling="no"
           aria-hidden="true"
           tabIndex={-1}
-          className="absolute inset-x-0 top-0 w-full border-0"
-          style={{ height: `calc(100% + ${HEADER + FOOTER}px)`, marginTop: `-${HEADER}px` }}
+          className="absolute top-0 border-0"
+          // 9:16 box: video height (iframe width x 1.25) must equal box height,
+          // so the iframe is 16/9/1.25 = 142.22% wide, centered, sides cropped.
+          style={{
+            width: "142.2222%",
+            left: "-21.1111%",
+            height: `calc(100% + ${HEADER + FOOTER}px)`,
+            marginTop: `-${HEADER}px`,
+          }}
         />
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-muted-foreground">

@@ -44,7 +44,7 @@ export function ProductFeed({ query, sort }: { query: string; sort: SortOrder })
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="mt-3 h-6 w-2/3" />
             <Skeleton className="mt-2 mb-4 h-4 w-1/3" />
-            <Skeleton className="aspect-[4/5] w-full rounded-xl" />
+            <Skeleton className="aspect-[9/16] w-full rounded-xl" />
           </div>
         ))}
       </div>
