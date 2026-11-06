@@ -25,7 +25,7 @@ export function ReelEmbed({
   return (
     <div
       className={cn(
-        "relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-border bg-muted",
+        "relative aspect-[9/16] w-full overflow-hidden rounded-xl border border-border bg-muted",
         className,
       )}
     >
