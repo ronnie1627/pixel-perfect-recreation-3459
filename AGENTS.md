@@ -34,4 +34,5 @@ use the editor.
 - The single admin is bootstrapped by a trigger on `auth.users`: the first account gets the admin role and every later sign-up is rejected — keep that trigger if auth changes.
 - `/admin` is a client-only route (`ssr: false`) that renders its own login form instead of using an `_authenticated` layout, because the spec wants login at `/admin`.
 - Search parsing lives in pure helpers in `src/lib/search.ts` / `src/lib/links.ts` with tests in `src/lib/search.test.ts`; change rules there, not in components.
+- Which Amazon link a button opens is decided only by `pickAmazonLink` in `src/lib/country.ts` (tested in `country.test.ts`); the "Shop from" choice lives in an in-memory store there, never in cookies or storage, so visitors aren't tracked.
 - Reels show only the video: `src/components/ReelEmbed.tsx` crops Instagram's cross-origin embed chrome with fixed header/footer offsets (measured constant across embed widths). Keep those offsets in that one component and re-measure if the embed ever shows or clips part of the video.
