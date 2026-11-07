@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Wordmark } from "@/components/Wordmark";
+import { CountrySelect } from "@/components/CountrySelect";
+import { pickAmazonLink, useShopCountry } from "@/lib/country";
 import { fetchProductPage, type Product } from "@/lib/products";
 
 export const Route = createFileRoute("/browse")({
@@ -57,7 +59,10 @@ function BrowsePage() {
         <Link to="/" aria-label="Vettly home">
           <Wordmark className="text-2xl" />
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <CountrySelect />
+          <ThemeToggle />
+        </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6 lg:px-8">
         <Button asChild variant="ghost" size="sm" className="mt-6">
@@ -102,6 +107,7 @@ function BrowsePage() {
 }
 
 function BrowseCard({ product }: { product: Product }) {
+  const link = pickAmazonLink(product, useShopCountry());
   return (
     <article className="flex h-full flex-col rounded-2xl border border-border bg-card p-3 shadow-card">
       <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
@@ -124,10 +130,14 @@ function BrowseCard({ product }: { product: Product }) {
       </div>
       <h2 className="mt-3 line-clamp-2 text-sm font-bold sm:text-base">{product.name}</h2>
       <Button asChild variant="gold" size="sm" className="mt-auto w-full pt-0">
-        <a href={product.amazon_url} target="_blank" rel="sponsored noopener noreferrer" className="mt-3">
+        <a href={link.url} target="_blank" rel="sponsored noopener noreferrer" className="mt-3">
           Get link <ExternalLink aria-hidden="true" />
+          <span className="sr-only">(opens {link.store} in a new tab)</span>
         </a>
       </Button>
+      <p className="mt-1 text-center text-[11px] text-muted-foreground" aria-hidden="true">
+        Opens {link.store}
+      </p>
     </article>
   );
 }

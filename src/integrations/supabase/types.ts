@@ -17,6 +17,7 @@ export type Database = {
       products: {
         Row: {
           amazon_url: string
+          amazon_url_in: string | null
           brand: string
           created_at: string
           episode: number
@@ -28,6 +29,7 @@ export type Database = {
         }
         Insert: {
           amazon_url: string
+          amazon_url_in?: string | null
           brand?: string
           created_at?: string
           episode: number
@@ -39,6 +41,7 @@ export type Database = {
         }
         Update: {
           amazon_url?: string
+          amazon_url_in?: string | null
           brand?: string
           created_at?: string
           episode?: number

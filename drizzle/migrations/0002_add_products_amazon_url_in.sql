@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS amazon_url_in text NULL CHECK (amazon_url_in IS NULL OR char_length(amazon_url_in) <= 2048);

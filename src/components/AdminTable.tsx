@@ -34,6 +34,7 @@ export function AdminTable({
             <TableHead>Name</TableHead>
             <TableHead className="hidden sm:table-cell">Brand</TableHead>
             <TableHead className="hidden md:table-cell">Date added</TableHead>
+            <TableHead>India link</TableHead>
             <TableHead>Published</TableHead>
             <TableHead className="text-right">
               <span className="sr-only">Actions</span>
@@ -64,6 +65,17 @@ export function AdminTable({
               <TableCell className="hidden text-muted-foreground sm:table-cell">{p.brand}</TableCell>
               <TableCell className="hidden text-muted-foreground md:table-cell">
                 {format(new Date(p.created_at), "d MMM yyyy")}
+              </TableCell>
+              <TableCell>
+                {p.amazon_url_in ? (
+                  <Badge variant="soft" className="rounded-full" title={p.amazon_url_in}>
+                    India link
+                  </Badge>
+                ) : (
+                  <span className="text-xs text-muted-foreground" aria-label="No India link">
+                    —
+                  </span>
+                )}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
