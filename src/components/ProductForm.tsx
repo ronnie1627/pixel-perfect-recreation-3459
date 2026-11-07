@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ReelEmbed } from "@/components/ReelEmbed";
-import { extractReelCode, isValidHttpUrl, reelUrl } from "@/lib/links";
+import { extractReelCode, isAmazonUrl, isValidHttpUrl, reelUrl } from "@/lib/links";
 import type { Product } from "@/lib/products";
 
 export type ProductInput = {
@@ -15,6 +15,7 @@ export type ProductInput = {
   brand: string;
   reel_code: string;
   amazon_url: string;
+  amazon_url_in: string | null;
   image_url: string;
   published: boolean;
 };
@@ -41,6 +42,11 @@ const schema = z.object({
     .min(1, "Enter the Amazon link")
     .max(2048, "That link is too long")
     .refine(isValidHttpUrl, "Enter a valid link starting with https://"),
+  amazonUrlIn: z
+    .string()
+    .trim()
+    .max(2048, "That link is too long")
+    .refine((v) => v === "" || isAmazonUrl(v), "Enter an Amazon link, e.g. https://www.amazon.in/… or https://amzn.to/…"),
 });
 
 type Errors = Partial<Record<keyof z.infer<typeof schema>, string>>;
@@ -61,6 +67,7 @@ export function ProductForm({
   const [brand, setBrand] = useState(initial?.brand ?? "");
   const [reel, setReel] = useState(initial?.reel_code ? reelUrl(initial.reel_code) : "");
   const [amazonUrl, setAmazonUrl] = useState(initial?.amazon_url ?? "");
+  const [amazonUrlIn, setAmazonUrlIn] = useState(initial?.amazon_url_in ?? "");
   const [imageUrl, setImageUrl] = useState(initial?.image_url ?? "");
   const [published, setPublished] = useState(initial?.published ?? true);
   const [errors, setErrors] = useState<Errors>({});
@@ -69,7 +76,7 @@ export function ProductForm({
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const result = schema.safeParse({ episode, name, brand, reelUrl: reel, imageUrl, amazonUrl });
+    const result = schema.safeParse({ episode, name, brand, reelUrl: reel, imageUrl, amazonUrl, amazonUrlIn });
     if (!result.success) {
       const next: Errors = {};
       for (const issue of result.error.issues) {
@@ -86,6 +93,7 @@ export function ProductForm({
       brand: result.data.brand,
       reel_code: extractReelCode(result.data.reelUrl) ?? "",
       amazon_url: result.data.amazonUrl,
+      amazon_url_in: result.data.amazonUrlIn || null,
       image_url: result.data.imageUrl,
       published,
     });
@@ -163,6 +171,22 @@ export function ProductForm({
             placeholder="https://amzn.to/…"
             aria-invalid={!!errors.amazonUrl}
             aria-describedby={errors.amazonUrl ? "amazon-error" : undefined}
+          />
+        </Field>
+        <Field
+          id="amazon-in"
+          label="Amazon India link (optional)"
+          error={errors.amazonUrlIn}
+          hint="Shown to visitors who shop from India. Leave empty to use the link above."
+        >
+          <Input
+            id="amazon-in"
+            type="url"
+            value={amazonUrlIn}
+            onChange={(e) => setAmazonUrlIn(e.target.value)}
+            placeholder="https://www.amazon.in/…"
+            aria-invalid={!!errors.amazonUrlIn}
+            aria-describedby={errors.amazonUrlIn ? "amazon-in-error" : "amazon-in-hint"}
           />
         </Field>
         <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
