@@ -11,7 +11,7 @@ export function CountrySelect() {
   const country = useShopCountry();
   return (
     <div className="flex items-center gap-2">
-      <span aria-hidden="true" className="hidden text-xs text-muted-foreground sm:inline">
+      <span aria-hidden="true" className="text-xs whitespace-nowrap text-muted-foreground">
         Shop from
       </span>
       <Select value={country} onValueChange={(v) => setShopCountry(v as ShopCountry)}>
