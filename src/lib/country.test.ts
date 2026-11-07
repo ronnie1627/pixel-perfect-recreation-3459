@@ -38,6 +38,7 @@ describe("isAmazonUrl", () => {
     "https://www.amazon.com/dp/B0ABC",
     "https://amzn.to/3abc",
     "https://amzn.in/d/abc",
+    "https://link.amazon/B06vRBrOu",
   ])("accepts %s", (url) => {
     expect(isAmazonUrl(url)).toBe(true);
   });

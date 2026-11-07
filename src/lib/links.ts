@@ -37,12 +37,14 @@ const AMAZON_SHORT_HOSTS = new Set(["amzn.to", "amzn.in", "amzn.eu", "a.co"]);
 
 /**
  * An http(s) link to Amazon: any amazon.<tld> store (amazon.in, amazon.com,
- * amazon.co.uk…, with subdomains) or an official short link (amzn.to, amzn.in, a.co).
+ * amazon.co.uk…, with subdomains) or an official short link (amzn.to, amzn.in, a.co, link.amazon).
  */
 export function isAmazonUrl(input: string): boolean {
   if (!isValidHttpUrl(input)) return false;
   const host = new URL(input.trim()).hostname.toLowerCase().replace(/\.$/, "");
   if (AMAZON_SHORT_HOSTS.has(host)) return true;
+  // Amazon's own ".amazon" domain, e.g. link.amazon short links.
+  if (/^[a-z0-9-]+\.amazon$/.test(host)) return true;
   return /(^|\.)amazon\.(com|in|co\.[a-z]{2}|com\.[a-z]{2}|[a-z]{2})$/.test(host);
 }
 
