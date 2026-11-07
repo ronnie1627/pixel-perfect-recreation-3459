@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CountrySelect } from "@/components/CountrySelect";
 import { ProductFeed } from "@/components/ProductFeed";
 import { SearchBar } from "@/components/SearchBar";
 import { SortSelect } from "@/components/SortSelect";
@@ -62,7 +63,10 @@ function HomePage() {
         <Link to="/" aria-label="Vettly home" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Wordmark className="text-2xl" />
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <CountrySelect />
+          <ThemeToggle />
+        </div>
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6 lg:px-8">

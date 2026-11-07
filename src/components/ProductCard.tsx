@@ -3,10 +3,12 @@ import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReelEmbed } from "@/components/ReelEmbed";
+import { pickAmazonLink, useShopCountry } from "@/lib/country";
 import type { Product } from "@/lib/products";
 
 export function ProductCard({ product }: { product: Product }) {
   const added = new Date(product.created_at);
+  const link = pickAmazonLink(product, useShopCountry());
   return (
     <article
       aria-labelledby={`p-${product.id}`}
@@ -31,12 +33,15 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
       <ReelEmbed reelCode={product.reel_code} title={product.name} className="mt-auto" />
       <Button asChild variant="gold" size="xl" className="mt-4 w-full">
-        <a href={product.amazon_url} target="_blank" rel="sponsored noopener noreferrer">
+        <a href={link.url} target="_blank" rel="sponsored noopener noreferrer">
           Click here for your link
           <ExternalLink aria-hidden="true" />
-          <span className="sr-only">(opens Amazon in a new tab)</span>
+          <span className="sr-only">(opens {link.store} in a new tab)</span>
         </a>
       </Button>
+      <p className="mt-1.5 text-center text-xs text-muted-foreground" aria-hidden="true">
+        Opens {link.store}
+      </p>
     </article>
   );
 }
