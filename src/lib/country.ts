@@ -96,7 +96,9 @@ export function pickAmazonLink(
 ): { url: string; store: string } {
   const india = product.amazon_url_in?.trim();
   if (country === "IN" && india) return { url: india, store: STORE_NAMES.IN };
-  return { url: product.amazon_url, store: STORE_NAMES[country] };
+  // India with no India link opens the US link, so the note must say Amazon.com.
+  const store = country === "IN" ? STORE_NAMES.US : STORE_NAMES[country];
+  return { url: product.amazon_url, store };
 }
 
 // ---- In-memory store shared by every page during a visit ----
