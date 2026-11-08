@@ -81,7 +81,8 @@ const LANGUAGE_COUNTRIES: Record<string, ShopCountry> = {
 /** Pick the country from a browser language tag such as "en-IN", "fr" or "de-AT". */
 export function countryFromLanguage(lang: string | undefined | null): ShopCountry {
   const [language, region] = (lang ?? "").trim().toLowerCase().split(/[-_]/);
-  if (region && REGION_COUNTRIES[region]) return REGION_COUNTRIES[region];
+  const regionCode = region?.toUpperCase();
+  if (regionCode && REGION_COUNTRIES[regionCode]) return REGION_COUNTRIES[regionCode];
   if (language && LANGUAGE_COUNTRIES[language]) return LANGUAGE_COUNTRIES[language];
   return "US";
 }
