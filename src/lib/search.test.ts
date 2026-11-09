@@ -26,7 +26,20 @@ describe("parseSearchTerms", () => {
 describe("buildTermFilters", () => {
   it("numeric words also match the episode number", () => {
     expect(buildTermFilters(["371"])).toEqual([
-      "name.ilike.*371*,brand.ilike.*371*,episode.eq.371",
+      "name.ilike.*371*,brand.ilike.*371*,main_category.ilike.*371*,category.ilike.*371*,episode.eq.371",
+    ]);
+  });
+
+  it("words also match the main category and subcategory", () => {
+    const [filter] = buildTermFilters(["kitchen"]);
+    expect(filter).toContain("main_category.ilike.*kitchen*");
+    expect(filter).toContain("category.ilike.*kitchen*");
+    expect(filter).not.toContain("episode.eq");
+  });
+
+  it.each(["21", "ep 21", "#21"])("%s matches episode 21", (q) => {
+    expect(buildTermFilters(parseSearchTerms(q))).toEqual([
+      expect.stringContaining("episode.eq.21"),
     ]);
   });
 
