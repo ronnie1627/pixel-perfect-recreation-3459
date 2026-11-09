@@ -48,6 +48,33 @@ export function isAmazonUrl(input: string): boolean {
   return /(^|\.)amazon\.(com|in|co\.[a-z]{2}|com\.[a-z]{2}|[a-z]{2})$/.test(host);
 }
 
+/** Short links (amzn.to, a.co, link.amazon…) hide the tag until they redirect. */
+export function isShortAmazonLink(input: string): boolean {
+  if (!isValidHttpUrl(input)) return false;
+  const host = new URL(input.trim()).hostname.toLowerCase().replace(/\.$/, "");
+  return AMAZON_SHORT_HOSTS.has(host) || /^[a-z0-9-]+\.amazon$/.test(host);
+}
+
+/** True when a full Amazon store link carries no "tag=" (so it earns nothing). */
+export function isMissingAffiliateTag(input: string): boolean {
+  if (!isAmazonUrl(input) || isShortAmazonLink(input)) return false;
+  return !new URL(input.trim()).searchParams.get("tag");
+}
+
+export const ASIN_PATTERN = /^[A-Z0-9]{10}$/;
+
+/** Pull the ASIN out of /dp/ASIN or /gp/product/ASIN links. */
+export function extractAsin(input: string): string | null {
+  const m = input.trim().match(/\/(?:dp|gp\/product)\/([A-Za-z0-9]{10})(?=[/?#]|$)/);
+  return m?.[1] ? m[1].toUpperCase() : null;
+}
+
+/** An internal site path like "/browse?main=Tech" or "/ep/21" (never another site). */
+export function isInternalPath(input: string): boolean {
+  const v = input.trim();
+  return v.startsWith("/") && !v.startsWith("//") && !v.includes("\\") && v.length <= 300;
+}
+
 /** A valid absolute http(s) URL. */
 export function isValidHttpUrl(input: string): boolean {
   try {

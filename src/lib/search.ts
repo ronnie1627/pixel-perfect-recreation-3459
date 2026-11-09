@@ -28,11 +28,16 @@ export function isEpisodeTerm(term: string): boolean {
 
 /**
  * One PostgREST `or` filter per term. Multiple `.or()` calls are ANDed together,
- * so every term must match the episode, name or brand.
+ * so every term must match the episode, name, brand or category.
  */
 export function buildTermFilters(terms: string[]): string[] {
   return terms.map((term) => {
-    const parts = [`name.ilike.*${term}*`, `brand.ilike.*${term}*`];
+    const parts = [
+      `name.ilike.*${term}*`,
+      `brand.ilike.*${term}*`,
+      `main_category.ilike.*${term}*`,
+      `category.ilike.*${term}*`,
+    ];
     if (isEpisodeTerm(term)) parts.push(`episode.eq.${Number(term)}`);
     return parts.join(",");
   });

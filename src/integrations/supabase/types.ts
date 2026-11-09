@@ -14,15 +14,88 @@ export type Database = {
   }
   public: {
     Tables: {
+      banners: {
+        Row: {
+          active: boolean
+          button_text: string
+          created_at: string
+          id: string
+          image_url: string
+          link: string
+          sort_order: number
+          subtitle: string
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          button_text?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          link?: string
+          sort_order?: number
+          subtitle?: string
+          title?: string
+        }
+        Update: {
+          active?: boolean
+          button_text?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          link?: string
+          sort_order?: number
+          subtitle?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          image_url: string | null
+          main_category: string
+          name: string
+          show_on_home: boolean
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          image_url?: string | null
+          main_category: string
+          name?: string
+          show_on_home?: boolean
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          image_url?: string | null
+          main_category?: string
+          name?: string
+          show_on_home?: boolean
+          sort_order?: number
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           amazon_url: string
           amazon_url_in: string | null
+          asin_in: string | null
+          asin_us: string | null
           brand: string
+          category: string
           created_at: string
           episode: number
           id: string
           image_url: string
+          main_category: string
           name: string
           published: boolean
           reel_code: string
@@ -30,11 +103,15 @@ export type Database = {
         Insert: {
           amazon_url: string
           amazon_url_in?: string | null
+          asin_in?: string | null
+          asin_us?: string | null
           brand?: string
+          category?: string
           created_at?: string
           episode: number
           id?: string
           image_url?: string
+          main_category?: string
           name: string
           published?: boolean
           reel_code?: string
@@ -42,14 +119,36 @@ export type Database = {
         Update: {
           amazon_url?: string
           amazon_url_in?: string | null
+          asin_in?: string | null
+          asin_us?: string | null
           brand?: string
+          category?: string
           created_at?: string
           episode?: number
           id?: string
           image_url?: string
+          main_category?: string
           name?: string
           published?: boolean
           reel_code?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }

@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  retainSearchParams,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
@@ -15,6 +16,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { themeInitScript } from "@/components/theme-toggle";
+import { countryParam, parseCountryParam } from "@/lib/country";
+
+type RootSearch = { country?: string | undefined };
 
 function NotFoundComponent() {
   return (
@@ -77,6 +81,12 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // "Shop from" lives in the URL (?country=in) and is carried across links.
+  validateSearch: (search: Record<string, unknown>): RootSearch => {
+    const c = parseCountryParam(search["country"]);
+    return { country: c ? countryParam(c) : undefined };
+  },
+  search: { middlewares: [retainSearchParams(["country"])] },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

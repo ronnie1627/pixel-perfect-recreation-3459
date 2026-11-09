@@ -1,9 +1,10 @@
 /**
  * "Shop from" country: decides which Amazon store a product button opens.
- * Pure helpers are unit tested; the store keeps the choice in memory only
+ * Pure helpers are unit tested; the choice is kept in the URL as ?country=
  * (no cookies, no storage, no tracking).
  */
 import { useSyncExternalStore } from "react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 
 export type ShopCountry =
   | "US"
@@ -102,29 +103,48 @@ export function pickAmazonLink(
   return { url: product.amazon_url, store };
 }
 
-// ---- In-memory store shared by every page during a visit ----
+// ---- The choice lives in the URL (?country=in) — no cookies, no storage ----
 
-let chosen: ShopCountry | null = null;
-const listeners = new Set<() => void>();
+/** Read ?country= ("in", "gb", "other"…); null when missing or unknown. */
+export function parseCountryParam(value: unknown): ShopCountry | null {
+  if (typeof value !== "string") return null;
+  const code = value.trim().toUpperCase();
+  return code in COUNTRY_LABELS ? (code as ShopCountry) : null;
+}
 
-function getSnapshot(): ShopCountry {
-  if (chosen === null) {
+export function countryParam(country: ShopCountry): string {
+  return country.toLowerCase();
+}
+
+let languageDefault: ShopCountry | null = null;
+
+function getLanguageDefault(): ShopCountry {
+  if (languageDefault === null) {
     const lang = typeof navigator !== "undefined" ? (navigator.languages?.[0] ?? navigator.language) : "";
-    chosen = countryFromLanguage(lang);
+    languageDefault = countryFromLanguage(lang);
   }
-  return chosen;
+  return languageDefault;
 }
 
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  return () => listeners.delete(cb);
-}
+const noopSubscribe = () => () => {};
 
-export function setShopCountry(country: ShopCountry) {
-  chosen = country;
-  listeners.forEach((l) => l());
-}
-
+/** The selected country: ?country= when set, otherwise the browser language default. */
 export function useShopCountry(): ShopCountry {
-  return useSyncExternalStore(subscribe, getSnapshot, () => "US");
+  const param = useRouterState({
+    select: (s) => (s.location.search as Record<string, unknown>)["country"],
+  });
+  const fallback = useSyncExternalStore(noopSubscribe, getLanguageDefault, () => "US" as const);
+  return parseCountryParam(param) ?? fallback;
+}
+
+/** Change the country by rewriting ?country= on the current page. */
+export function useSetShopCountry() {
+  const navigate = useNavigate();
+  return (country: ShopCountry) =>
+    void navigate({
+      to: ".",
+      search: ((prev: Record<string, unknown>) => ({ ...prev, country: countryParam(country) })) as never,
+      replace: true,
+      resetScroll: false,
+    });
 }
