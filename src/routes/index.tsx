@@ -1,24 +1,17 @@
-import { useEffect, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { LayoutGrid } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { CountrySelect } from "@/components/CountrySelect";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { BannerCarousel } from "@/components/BannerCarousel";
+import { CategoryCircles } from "@/components/CategoryCircles";
 import { ProductFeed } from "@/components/ProductFeed";
-import { SearchBar } from "@/components/SearchBar";
-import { SortSelect } from "@/components/SortSelect";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Wordmark } from "@/components/Wordmark";
-import { parseSort, type SortOrder } from "@/lib/search";
-
-type FeedSearch = { q?: string | undefined; sort?: SortOrder | undefined };
+import { SiteShell } from "@/components/site/SiteShell";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>): FeedSearch => {
-    const q = search["q"];
-    return {
-      q: typeof q === "string" && q ? q.slice(0, 120) : undefined,
-      sort: search["sort"] === "oldest" ? "oldest" : undefined,
-    };
+  // Old shared links like /?q=371 now open the search results page.
+  beforeLoad: ({ search }) => {
+    const q = (search as Record<string, unknown>)["q"];
+    if (typeof q === "string" && q.trim()) {
+      throw redirect({ to: "/browse", search: { q: q.slice(0, 120) } });
+    }
   },
   head: () => ({
     meta: [
@@ -26,7 +19,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Vetted products. Real reviews. Search every product tested in my Instagram reels by episode, name or brand.",
+          "Vetted products. Real reviews. Watch every product tested in my Instagram reels, then grab the Amazon link.",
       },
       { property: "og:title", content: "Vettly – Tested picks from my reels" },
       {
@@ -41,79 +34,28 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const search = Route.useSearch();
-  const navigate = useNavigate({ from: "/" });
-  const sort = parseSort(search.sort);
-  const [input, setInput] = useState(search.q ?? "");
-
-  // Debounce typing into the URL so results are shareable and back/forward works.
-  useEffect(() => {
-    const t = setTimeout(() => {
-      const q = input.trim() ? input : undefined;
-      if (q !== search.q) {
-        void navigate({ search: (prev) => ({ ...prev, q }), replace: true });
-      }
-    }, 250);
-    return () => clearTimeout(t);
-  }, [input, search.q, navigate]);
-
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 pt-5 sm:px-6 lg:px-8">
-        <Link to="/" aria-label="Vettly home" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <Wordmark className="text-2xl" />
-        </Link>
-        <div className="flex items-center gap-1">
-          <CountrySelect />
-          <ThemeToggle />
+    <SiteShell>
+      <h1 className="sr-only">Vettly – Vetted products. Real reviews.</h1>
+      <div className="mt-6">
+        <BannerCarousel />
+      </div>
+      <CategoryCircles />
+      <section aria-labelledby="latest-reels" className="mt-10">
+        <div className="mx-auto mb-4 flex max-w-[420px] items-center justify-between gap-3">
+          <h2 id="latest-reels" className="text-lg font-bold sm:text-xl">
+            Latest reels
+          </h2>
+          <Link
+            to="/browse"
+            search={{ view: "reels" }}
+            className="inline-flex items-center gap-1 text-sm font-medium text-gold hover:underline"
+          >
+            See all <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
         </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6 lg:px-8">
-        <section className="pt-8 pb-6 text-center sm:pt-14 sm:pb-8">
-          <h1 className="text-5xl leading-none font-extrabold sm:text-7xl lg:text-8xl">
-            <Wordmark />
-          </h1>
-          <p className="mt-3 text-base text-muted-foreground sm:text-xl">
-            Vetted products. Real reviews.
-          </p>
-        </section>
-
-        <div className="mx-auto w-full max-w-xl">
-          <SearchBar value={input} onChange={setInput} />
-          <p className="mt-2 px-1 text-xs text-muted-foreground sm:text-center">
-            Links are Amazon affiliate links — I may earn a small commission at no extra cost to you.
-          </p>
-          <div className="mt-5 flex justify-center">
-            <Button asChild variant="gold" size="lg" className="rounded-full px-6">
-              <Link to="/browse">
-                <LayoutGrid aria-hidden="true" /> Browse all products
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        <div className="mt-8 mb-4 flex items-center justify-between gap-3">
-          <span className="text-sm font-medium">Latest picks</span>
-          <SortSelect
-            value={sort}
-            onChange={(v) =>
-              navigate({
-                search: (prev) => ({ ...prev, sort: v === "oldest" ? "oldest" : undefined }),
-                replace: true,
-              })
-            }
-          />
-        </div>
-
-        <ProductFeed query={search.q ?? ""} sort={sort} />
-      </main>
-
-      <footer className="mt-10 border-t border-border py-8 text-center text-xs text-muted-foreground">
-        <p className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          © Vettly. As an Amazon Associate I earn from qualifying purchases.
-        </p>
-      </footer>
-    </div>
+        <ProductFeed view="reels" layout="column" />
+      </section>
+    </SiteShell>
   );
 }
