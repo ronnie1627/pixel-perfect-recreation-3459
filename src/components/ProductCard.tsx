@@ -1,47 +1,65 @@
 import { format } from "date-fns";
-import { ExternalLink } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { AmazonButton } from "@/components/AmazonButton";
+import { HeartButton } from "@/components/HeartButton";
 import { ReelEmbed } from "@/components/ReelEmbed";
-import { pickAmazonLink, useShopCountry } from "@/lib/country";
+import { Reveal } from "@/components/Reveal";
+import { categoryLabel } from "@/lib/catalog";
 import type { Product } from "@/lib/products";
 
+/** Reel card: episode, name, reel, link button. */
 export function ProductCard({ product }: { product: Product }) {
   const added = new Date(product.created_at);
-  const link = pickAmazonLink(product, useShopCountry());
+  const category = categoryLabel(product);
   return (
-    <article
-      aria-labelledby={`p-${product.id}`}
-      className="animate-rise flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-card"
-    >
-      <Badge variant="gold" className="self-start rounded-full px-3 py-1 text-xs">
-        Ep. {product.episode}
-      </Badge>
-      <div className="mt-3 mb-4 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 id={`p-${product.id}`} className="text-xl leading-tight font-bold">
-            {product.name}
-          </h2>
-          {product.brand && <p className="mt-0.5 text-sm text-muted-foreground">{product.brand}</p>}
+    <Reveal className="h-full">
+      <article
+        aria-labelledby={`p-${product.id}`}
+        className="flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-card"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <Badge variant="gold" className="rounded-full px-3 py-1 text-xs">
+            Ep. {product.episode}
+          </Badge>
+          <HeartButton episode={product.episode} name={product.name} />
         </div>
-        <time
-          dateTime={product.created_at}
-          className="shrink-0 pt-1 text-xs text-muted-foreground"
-        >
-          {format(added, "d MMM yyyy")}
-        </time>
+        <div className="mt-3 mb-4 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 id={`p-${product.id}`} className="text-xl leading-tight font-bold">
+              <Link
+                to="/ep/$episode"
+                params={{ episode: String(product.episode) }}
+                className="rounded-sm hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {product.name}
+              </Link>
+            </h2>
+            {product.brand && <p className="mt-0.5 text-sm text-muted-foreground">{product.brand}</p>}
+            {category && <p className="mt-0.5 text-xs text-muted-foreground">{category}</p>}
+          </div>
+          <time dateTime={product.created_at} className="shrink-0 pt-1 text-xs text-muted-foreground">
+            {format(added, "d MMM yyyy")}
+          </time>
+        </div>
+        <ReelEmbed reelCode={product.reel_code} title={product.name} className="mt-auto" />
+        <AmazonButton product={product} className="mt-4" />
+      </article>
+    </Reveal>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4" aria-hidden="true">
+      <div className="flex justify-between">
+        <div className="skeleton-shimmer h-6 w-20 rounded-full" />
+        <div className="skeleton-shimmer size-9 rounded-full" />
       </div>
-      <ReelEmbed reelCode={product.reel_code} title={product.name} className="mt-auto" />
-      <Button asChild variant="gold" size="xl" className="mt-4 w-full">
-        <a href={link.url} target="_blank" rel="sponsored noopener noreferrer">
-          Click here for your link
-          <ExternalLink aria-hidden="true" />
-          <span className="sr-only">(opens {link.store} in a new tab)</span>
-        </a>
-      </Button>
-      <p className="mt-1.5 text-center text-xs text-muted-foreground" aria-hidden="true">
-        Opens {link.store}
-      </p>
-    </article>
+      <div className="skeleton-shimmer mt-3 h-6 w-2/3 rounded-md" />
+      <div className="skeleton-shimmer mt-2 mb-4 h-4 w-1/3 rounded-md" />
+      <div className="skeleton-shimmer aspect-[9/16] w-full rounded-xl" />
+      <div className="skeleton-shimmer mt-4 h-13 w-full rounded-xl" />
+    </div>
   );
 }
