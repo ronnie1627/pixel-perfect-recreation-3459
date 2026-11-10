@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Clapperboard } from "lucide-react";
 import { reelEmbedUrl } from "@/lib/links";
 import { cn } from "@/lib/utils";
@@ -22,34 +23,63 @@ export function ReelEmbed({
   title: string;
   className?: string;
 }) {
+  const box = useRef<HTMLDivElement>(null);
+  // The iframe is only created once the reel is near the screen.
+  const [near, setNear] = useState(false);
+
+  useEffect(() => {
+    const el = box.current;
+    if (!el || near || !reelCode) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reelCode, near]);
+
   return (
     <div
+      ref={box}
       className={cn(
         "relative aspect-[9/16] w-full overflow-hidden rounded-xl border border-border bg-muted",
         className,
       )}
     >
       {reelCode ? (
-        <iframe
-          key={reelCode}
-          src={reelEmbedUrl(reelCode)}
-          title={`Instagram reel: ${title}`}
-          loading="lazy"
-          allow="autoplay; encrypted-media; clipboard-write; picture-in-picture"
-          allowFullScreen
-          scrolling="no"
-          aria-hidden="true"
-          tabIndex={-1}
-          className="absolute top-0 border-0"
-          // 9:16 box: video height (iframe width x 1.25) must equal box height,
-          // so the iframe is 16/9/1.25 = 142.22% wide, centered, sides cropped.
-          style={{
-            width: "142.2222%",
-            left: "-21.1111%",
-            height: `calc(100% + ${HEADER + FOOTER}px)`,
-            marginTop: `-${HEADER}px`,
-          }}
-        />
+        near ? (
+          <iframe
+            key={reelCode}
+            src={reelEmbedUrl(reelCode)}
+            title={`Instagram reel: ${title}`}
+            loading="lazy"
+            allow="autoplay; encrypted-media; clipboard-write; picture-in-picture"
+            allowFullScreen
+            scrolling="no"
+            aria-hidden="true"
+            tabIndex={-1}
+            className="absolute top-0 border-0"
+            // 9:16 box: video height (iframe width x 1.25) must equal box height,
+            // so the iframe is 16/9/1.25 = 142.22% wide, centered, sides cropped.
+            style={{
+              width: "142.2222%",
+              left: "-21.1111%",
+              height: `calc(100% + ${HEADER + FOOTER}px)`,
+              marginTop: `-${HEADER}px`,
+            }}
+          />
+        ) : (
+          <div className="skeleton-shimmer absolute inset-0" aria-hidden="true" />
+        )
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-muted-foreground">
           <Clapperboard className="size-10 text-gold" aria-hidden="true" />

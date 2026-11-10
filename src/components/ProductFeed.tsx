@@ -1,52 +1,66 @@
-import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Loader2, PackageSearch } from "lucide-react";
-import { ProductCard } from "@/components/ProductCard";
+import { Link } from "@tanstack/react-router";
+import { PackageSearch } from "lucide-react";
+import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
+import { PhotoTile, PhotoTileSkeleton } from "@/components/PhotoTile";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { fetchProductPage, PUBLIC_PAGE_SIZE } from "@/lib/products";
+import { useLoadMore } from "@/hooks/use-load-more";
+import { fetchProductPage, PHOTO_PAGE_SIZE, REEL_PAGE_SIZE } from "@/lib/products";
 import type { SortOrder } from "@/lib/search";
+import { cn } from "@/lib/utils";
 
-// One column on phones, two on tablets, three on laptops/desktops.
-const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+export type FeedView = "photos" | "reels";
 
-export function ProductFeed({ query, sort }: { query: string; sort: SortOrder }) {
-  const sentinel = useRef<HTMLDivElement>(null);
+const LAYOUT = {
+  /** Home: one reel after another in a single centred column. */
+  column: "mx-auto flex max-w-[420px] flex-col gap-6",
+  reels: "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+  photos: "grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4",
+};
 
+/**
+ * Infinite-scroll product feed. New pages are appended (existing cards keep
+ * their keys, so reels already playing are left alone).
+ */
+export function ProductFeed({
+  view,
+  layout,
+  query = "",
+  sort = "newest",
+  main,
+  cat,
+  showCount = false,
+}: {
+  view: FeedView;
+  layout: keyof typeof LAYOUT;
+  query?: string;
+  sort?: SortOrder;
+  main?: string | undefined;
+  cat?: string | undefined;
+  showCount?: boolean;
+}) {
+  const pageSize = view === "photos" ? PHOTO_PAGE_SIZE : REEL_PAGE_SIZE;
   const feed = useInfiniteQuery({
-    queryKey: ["products", "public", query, sort],
+    queryKey: ["products", "public", view, query, sort, main ?? "", cat ?? ""],
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      fetchProductPage({ query, sort, offset: pageParam, pageSize: PUBLIC_PAGE_SIZE }),
+      fetchProductPage({ query, sort, offset: pageParam, pageSize, status: "published", main, cat }),
     getNextPageParam: (last) => last.nextOffset,
   });
-
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = feed;
+  const sentinel = useLoadMore({
+    hasMore: !!hasNextPage,
+    loading: isFetchingNextPage,
+    loadMore: () => void fetchNextPage(),
+  });
 
-  useEffect(() => {
-    const el = sentinel.current;
-    if (!el || !hasNextPage) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !isFetchingNextPage) void fetchNextPage();
-      },
-      { rootMargin: "800px 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const Skeleton = view === "photos" ? PhotoTileSkeleton : ProductCardSkeleton;
+  const skeletons = (n: number) => Array.from({ length: n }, (_, i) => <Skeleton key={`s${i}`} />);
 
   if (feed.isPending) {
     return (
-      <div className={GRID} aria-busy="true" aria-label="Loading products">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="rounded-2xl border border-border bg-card p-4">
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="mt-3 h-6 w-2/3" />
-            <Skeleton className="mt-2 mb-4 h-4 w-1/3" />
-            <Skeleton className="aspect-[9/16] w-full rounded-xl " />
-          </div>
-        ))}
+      <div className={LAYOUT[layout]} aria-busy="true" aria-label="Loading products">
+        {skeletons(view === "photos" ? 8 : 2)}
       </div>
     );
   }
@@ -66,35 +80,49 @@ export function ProductFeed({ query, sort }: { query: string; sort: SortOrder })
   const total = feed.data.pages[0]?.count ?? 0;
 
   return (
-    <section aria-label="Products">
-      <p className="mb-4 text-sm text-muted-foreground" aria-live="polite">
-        {total === 1 ? "1 product" : `${total} products`}
-        {query.trim() ? ` for “${query.trim()}”` : ""}
-      </p>
+    <div>
+      {showCount && (
+        <p className="mb-4 text-sm text-muted-foreground" aria-live="polite">
+          {total === 1 ? "1 product" : `${total} products`}
+          {query.trim() ? ` for “${query.trim()}”` : ""}
+        </p>
+      )}
 
       {products.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
           <PackageSearch className="mx-auto size-10 text-gold" aria-hidden="true" />
           <h2 className="mt-3 text-lg font-bold">No products found</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Try an episode number like “371” or a brand name.
+            Try an episode number like “21”, a brand name or another category.
           </p>
         </div>
       ) : (
-        <ol className={GRID}>
+        <ol className={LAYOUT[layout]}>
           {products.map((p) => (
-            <li key={p.id}>
-              <ProductCard product={p} />
-            </li>
+            <li key={p.id}>{view === "photos" ? <PhotoTile product={p} /> : <ProductCard product={p} />}</li>
           ))}
+          {isFetchingNextPage && (
+            <li className={cn(layout === "photos" ? "contents" : undefined)} aria-label="Loading more">
+              {layout === "photos" ? skeletons(4) : <Skeleton />}
+            </li>
+          )}
         </ol>
       )}
 
-      <div ref={sentinel} className="flex h-16 items-center justify-center">
-        {isFetchingNextPage && (
-          <Loader2 className="size-5 animate-spin text-muted-foreground" aria-label="Loading more" />
-        )}
-      </div>
-    </section>
+      <div ref={sentinel} aria-hidden="true" className="h-4" />
+      {isFetchingNextPage && <p className="sr-only" aria-live="polite">Loading more</p>}
+      {!hasNextPage && products.length > 0 && (
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          You've reached the end — that's every {view === "photos" ? "product" : "reel"} so far.{" "}
+          {layout === "column" ? (
+            <Link to="/browse" className="font-medium text-gold hover:underline">
+              Browse all products
+            </Link>
+          ) : (
+            "New product tested every day."
+          )}
+        </p>
+      )}
+    </div>
   );
 }
