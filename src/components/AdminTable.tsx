@@ -33,6 +33,7 @@ export function AdminTable({
             <TableHead className="w-16">Photo</TableHead>
             <TableHead>Name</TableHead>
             <TableHead className="hidden sm:table-cell">Brand</TableHead>
+            <TableHead className="hidden lg:table-cell">Category</TableHead>
             <TableHead className="hidden md:table-cell">Date added</TableHead>
             <TableHead>India link</TableHead>
             <TableHead>Published</TableHead>
@@ -63,6 +64,16 @@ export function AdminTable({
                 <span className="block text-xs text-muted-foreground sm:hidden">{p.brand}</span>
               </TableCell>
               <TableCell className="hidden text-muted-foreground sm:table-cell">{p.brand}</TableCell>
+              <TableCell className="hidden text-xs text-muted-foreground lg:table-cell">
+                {p.main_category === "Uncategorised" ? (
+                  <span className="italic">Uncategorised</span>
+                ) : (
+                  <>
+                    {p.main_category}
+                    {p.category && <span className="block">{p.category}</span>}
+                  </>
+                )}
+              </TableCell>
               <TableCell className="hidden text-muted-foreground md:table-cell">
                 {format(new Date(p.created_at), "d MMM yyyy")}
               </TableCell>
