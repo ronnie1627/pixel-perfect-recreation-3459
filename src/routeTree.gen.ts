@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as EpEpisodeRouteImport } from './routes/ep.$episode'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const BrowseRoute = BrowseRouteImport.update({
   path: '/browse',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EpEpisodeRoute = EpEpisodeRouteImport.update({
+  id: '/ep/$episode',
+  path: '/ep/$episode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/browse': typeof BrowseRoute
+  '/ep/$episode': typeof EpEpisodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/browse': typeof BrowseRoute
+  '/ep/$episode': typeof EpEpisodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/browse': typeof BrowseRoute
+  '/ep/$episode': typeof EpEpisodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/browse'
+  fullPaths: '/' | '/admin' | '/browse' | '/ep/$episode'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/browse'
-  id: '__root__' | '/' | '/admin' | '/browse'
+  to: '/' | '/admin' | '/browse' | '/ep/$episode'
+  id: '__root__' | '/' | '/admin' | '/browse' | '/ep/$episode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BrowseRoute: typeof BrowseRoute
+  EpEpisodeRoute: typeof EpEpisodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ep/$episode': {
+      id: '/ep/$episode'
+      path: '/ep/$episode'
+      fullPath: '/ep/$episode'
+      preLoaderRoute: typeof EpEpisodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BrowseRoute: BrowseRoute,
+  EpEpisodeRoute: EpEpisodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
